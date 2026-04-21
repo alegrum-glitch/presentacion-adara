@@ -1,0 +1,567 @@
+<!doctype html>
+<html lang="es"><head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Adara × Alvra.IA — Propuesta</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<style>
+:root{
+  --bg1:#F5E6D4;--bg2:#ECD6BD;--tan:#D4B59A;--beige:#E4C7A8;
+  --terra:#B85B42;--gold:#B8894F;--ink:#2E1F18;
+  --ink60:rgba(46,31,24,.62);--ink40:rgba(46,31,24,.42);--ink20:rgba(46,31,24,.2);--ink10:rgba(46,31,24,.1);
+  --cream:rgba(255,247,236,.55);--cream-strong:rgba(255,247,236,.75);
+  --ease:cubic-bezier(.22,.8,.24,1);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;width:100%;overflow:hidden}
+body{
+  font-family:'Inter',system-ui,sans-serif;color:var(--ink);
+  background:linear-gradient(160deg,var(--bg1) 0%,var(--bg2) 100%);
+  -webkit-font-smoothing:antialiased;
+}
+body::before{
+  content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
+  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 .18 0 0 0 0 .12 0 0 0 0 .09 0 0 0 .35 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+  opacity:.08;mix-blend-mode:multiply;
+}
+.orb{position:fixed;border-radius:50%;pointer-events:none;z-index:0;filter:blur(2px);opacity:.7}
+.orb.tan{background:radial-gradient(closest-side,#D4B59A .5,rgba(212,181,154,0))}
+.orb.beige{background:radial-gradient(closest-side,#E4C7A8,rgba(228,199,168,0))}
+
+h1,h2,h3,.serif{font-family:'DM Serif Display',serif;font-style:italic;font-weight:400;letter-spacing:-.01em}
+h1{font-size:clamp(48px,7.8vw,124px);line-height:.95}
+h2{font-size:clamp(36px,5.2vw,72px);line-height:1.02}
+h3{font-size:clamp(22px,2.2vw,30px);line-height:1.15}
+.mono,.label{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.18em;text-transform:uppercase}
+
+/* Top bar */
+.bar{position:fixed;top:0;left:0;right:0;z-index:50;height:2px;background:rgba(46,31,24,.08)}
+.bar>i{display:block;height:100%;width:10%;background:linear-gradient(90deg,var(--terra),var(--gold));transition:width .8s var(--ease)}
+
+.brand{position:fixed;top:24px;left:32px;z-index:40;display:flex;align-items:center;gap:12px}
+.brand .lg{width:30px;height:30px;border:1px solid var(--terra);border-radius:50%;display:grid;place-items:center;color:var(--terra);transform:rotate(45deg)}
+.brand .lg div{width:8px;height:8px;background:var(--terra);transform:rotate(45deg)}
+.brand .nm{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--ink)}
+.brand .sub{font-family:'JetBrains Mono',monospace;font-size:9.5px;letter-spacing:.22em;color:var(--ink40);margin-top:2px}
+
+.frame{position:fixed;top:30px;right:32px;z-index:40;font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.22em;color:var(--ink40)}
+.frame b{color:var(--terra);font-weight:500}
+
+/* Vertical dots on right */
+.dots{position:fixed;right:32px;top:50%;transform:translateY(-50%);z-index:40;display:flex;flex-direction:column;gap:14px;padding:8px}
+.dots button{position:relative;width:6px;height:6px;border-radius:50%;background:var(--ink20);border:0;padding:0;cursor:pointer;transition:all .35s var(--ease)}
+.dots button.on{background:var(--terra);width:6px;height:22px;border-radius:6px}
+.dots button .tag{position:absolute;right:18px;top:50%;transform:translateY(-50%);font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--ink);background:var(--cream-strong);backdrop-filter:blur(8px);padding:5px 9px;border:1px solid var(--ink10);border-radius:4px;white-space:nowrap;opacity:0;pointer-events:none;transition:opacity .25s var(--ease)}
+.dots button:hover .tag{opacity:1}
+
+/* Bottom-left nav arrows */
+.nav{position:fixed;bottom:32px;left:32px;z-index:40;display:flex;flex-direction:column;gap:8px}
+.nav button{width:38px;height:38px;border-radius:50%;border:1px solid var(--ink20);background:var(--cream);backdrop-filter:blur(14px);display:grid;place-items:center;cursor:pointer;color:var(--ink);transition:all .25s var(--ease)}
+.nav button:hover:not(:disabled){border-color:var(--terra);color:var(--terra);transform:scale(1.06)}
+.nav button:active{transform:scale(.94)}
+.nav button:disabled{opacity:.3;cursor:default}
+.nav button svg{width:14px;height:14px}
+
+/* Page footer label */
+.foot{position:fixed;bottom:32px;right:32px;z-index:40;font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.22em;text-transform:uppercase;color:var(--ink40)}
+
+/* Stage with vertical scroll-snap */
+.stage{position:relative;width:100vw;height:100vh;overflow-y:scroll;scroll-snap-type:y mandatory;scroll-behavior:smooth;scrollbar-width:none}
+.stage::-webkit-scrollbar{display:none}
+.slide{position:relative;width:100vw;height:100vh;scroll-snap-align:start;scroll-snap-stop:always;display:flex;align-items:center;justify-content:center;padding:96px 96px 96px;overflow:hidden}
+@media(max-width:1100px){.slide{padding:96px 56px}}
+.inner{width:100%;max-width:1240px;position:relative;z-index:2}
+
+/* Hairline + section labels */
+.hairline{height:1px;background:var(--ink20);width:60px}
+.hairline.full{width:100%;background:linear-gradient(90deg,transparent,var(--ink20),transparent)}
+.section-label{display:flex;align-items:center;gap:14px;font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:var(--terra)}
+.section-label .num{color:var(--ink40)}
+
+/* Asymmetric two-column */
+.two{display:grid;grid-template-columns:1.05fr 1fr;gap:64px;align-items:center}
+.two.rev{grid-template-columns:1fr 1.05fr}
+@media(max-width:1100px){.two,.two.rev{grid-template-columns:1fr;gap:32px}}
+
+.three{display:grid;grid-template-columns:repeat(3,1fr);gap:24px}
+@media(max-width:900px){.three{grid-template-columns:1fr}}
+
+.six{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+@media(max-width:900px){.six{grid-template-columns:repeat(2,1fr)}}
+
+/* Cream glass cards */
+.card{position:relative;background:var(--cream);backdrop-filter:blur(14px) saturate(120%);-webkit-backdrop-filter:blur(14px) saturate(120%);border:1px solid rgba(255,255,255,.5);border-radius:14px;padding:24px;box-shadow:0 1px 0 rgba(255,255,255,.6) inset,0 20px 40px -28px rgba(46,31,24,.25)}
+.card.strong{background:var(--cream-strong)}
+.card.acc{padding-left:28px}
+.card.acc::before{content:'';position:absolute;left:0;top:18px;bottom:18px;width:3px;border-radius:3px;background:var(--terra)}
+.card.acc.gold::before{background:var(--gold)}
+.card.acc.brown::before{background:var(--ink)}
+
+/* Diamond bullet */
+.diamond{display:inline-block;width:6px;height:6px;background:var(--terra);transform:rotate(45deg);margin-right:10px;vertical-align:middle;flex-shrink:0;margin-top:8px}
+.diamond.gold{background:var(--gold)}
+.diamond.brown{background:var(--ink)}
+
+/* Star bullet (used in frames 2 & 6) */
+.dash{display:inline-block;width:10px;height:10px;margin-right:0;flex-shrink:0;margin-top:6px;background-color:var(--terra);-webkit-mask:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path d='M12 2l2.6 7.4L22 12l-7.4 2.6L12 22l-2.6-7.4L2 12l7.4-2.6z'/></svg>") center/contain no-repeat;mask:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path d='M12 2l2.6 7.4L22 12l-7.4 2.6L12 22l-2.6-7.4L2 12l7.4-2.6z'/></svg>") center/contain no-repeat}
+.dash.gold{background-color:var(--gold)}
+.dash.brown{background-color:var(--ink)}
+
+/* Lists */
+.list{list-style:none;padding-left:0}
+.list li{display:flex;gap:10px;align-items:flex-start;padding:6px 0;color:var(--ink);font-size:14.5px;line-height:1.55}
+.list li>span:last-child{flex:1}
+
+/* Body text */
+p{line-height:1.6;color:var(--ink)}
+.lead{font-size:17px;line-height:1.6;color:var(--ink60);max-width:520px}
+
+/* Pill chip */
+.chip{display:inline-flex;align-items:center;gap:8px;padding:6px 12px;border:1px solid var(--ink20);border-radius:999px;font-family:'JetBrains Mono',monospace;font-size:10.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--ink);background:var(--cream)}
+.chip.terra{border-color:var(--terra);color:var(--terra)}
+.chip.gold{border-color:var(--gold);color:var(--gold)}
+
+/* Accent italic phrase */
+.italic{font-family:'DM Serif Display',serif;font-style:italic;color:var(--terra)}
+
+/* Big number watermark */
+.watermark{font-family:'DM Serif Display',serif;font-style:italic;font-size:120px;color:rgba(184,91,66,.08);line-height:.8;position:absolute;right:24px;top:18px;pointer-events:none}
+
+/* Animations: fadein with stagger */
+.fadein{opacity:0;transform:translateY(28px);filter:blur(8px);transition:opacity .85s var(--ease),transform .9s var(--ease),filter .8s var(--ease)}
+.slide.in .fadein{opacity:1;transform:none;filter:blur(0)}
+.slide.in .d1{transition-delay:.06s}.slide.in .d2{transition-delay:.14s}.slide.in .d3{transition-delay:.22s}.slide.in .d4{transition-delay:.3s}.slide.in .d5{transition-delay:.38s}.slide.in .d6{transition-delay:.46s}.slide.in .d7{transition-delay:.54s}.slide.in .d8{transition-delay:.62s}.slide.in .d9{transition-delay:.7s}
+
+/* Animated growing line */
+.growline{height:1px;background:var(--ink);transform:scaleX(0);transform-origin:0 50%;transition:transform 1.1s var(--ease) .35s;display:block}
+.slide.in .growline{transform:scaleX(1)}
+.growline.terra{background:var(--terra)}
+
+/* Phone mock */
+.phone{margin:18px auto 0;max-width:280px;background:var(--cream-strong);border-radius:16px;padding:14px;border:1px solid var(--ink10)}
+.phone .head{height:34px;border-radius:8px;background:rgba(46,31,24,.05);display:grid;place-items:center;font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--ink60);margin-bottom:10px;letter-spacing:.1em}
+.phone .lk{padding:11px 12px;border-radius:8px;background:rgba(255,255,255,.5);border:1px solid var(--ink10);margin-bottom:7px;font-size:12.5px;display:flex;justify-content:space-between;align-items:center;color:var(--ink)}
+.phone .lk svg{width:11px;height:11px;color:var(--terra)}
+
+/* Roadmap dots */
+.tdot{width:11px;height:11px;background:var(--terra);transform:rotate(45deg);margin-bottom:18px}
+.tdot.gold{background:var(--gold)}.tdot.brown{background:var(--ink)}
+
+/* Cover specific */
+.cover-eyebrow{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:36px}
+.cover-meta{position:absolute;bottom:0;right:0;text-align:right;font-family:'JetBrains Mono',monospace;font-size:10.5px;letter-spacing:.22em;text-transform:uppercase;color:var(--ink60);line-height:1.8}
+
+/* Contact grid */
+.contact{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-top:48px}
+@media(max-width:760px){.contact{grid-template-columns:repeat(2,1fr)}}
+.contact a{display:block;padding:18px 16px 16px;border-radius:12px;background:var(--cream);border:1px solid var(--ink10);transition:all .3s var(--ease);position:relative}
+.contact a:hover{transform:translateY(-3px);border-color:var(--terra)}
+.contact .lab{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.22em;text-transform:uppercase;color:var(--ink40);margin-bottom:6px}
+.contact .val{font-family:'DM Serif Display',serif;font-style:italic;font-size:18px;color:var(--ink)}
+.contact .ic{position:absolute;top:14px;right:14px;color:var(--terra);opacity:.6}
+.contact .ic svg{width:13px;height:13px}
+
+a{color:inherit;text-decoration:none}
+.muted{color:var(--ink60)}
+.terra{color:var(--terra)}
+.gold-c{color:var(--gold)}
+
+/* Day grid mini-calendar */
+.cal{display:flex;gap:7px;margin-top:14px}
+.cal>div{flex:1;text-align:center}
+.cal .d{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--ink40);letter-spacing:.15em;margin-bottom:6px}
+.cal .b{height:42px;border-radius:6px;background:rgba(46,31,24,.06);border:1px solid var(--ink10)}
+.cal .b.on{background:rgba(184,91,66,.18);border-color:rgba(184,91,66,.4)}
+
+.cap-flex{display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:24px}
+</style></head>
+<body>
+
+<div class="orb tan" style="top:-150px;left:-150px;width:480px;height:480px"></div>
+<div class="orb beige" style="bottom:-180px;right:-120px;width:560px;height:560px"></div>
+<div class="orb tan" style="top:50%;right:-200px;width:380px;height:380px;opacity:.4"></div>
+<div class="orb beige" style="bottom:25%;left:-180px;width:340px;height:340px;opacity:.45"></div>
+
+<div class="bar"><i id="prog"></i></div>
+
+<div class="brand">
+  <div class="lg"><div></div></div>
+  <div>
+    <div class="nm">Adara × Alvra.IA</div>
+    <div class="sub">Propuesta · Abril 2026</div>
+  </div>
+</div>
+
+<div class="frame"><b id="fnum">01</b> &nbsp;/&nbsp; <span id="ftot">10</span></div>
+
+<div class="dots" id="dots"></div>
+
+<main class="stage" id="stage"></main>
+
+<div class="nav">
+  <button id="prev" aria-label="Anterior"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M18 15l-6-6-6 6"/></svg></button>
+  <button id="next" aria-label="Siguiente"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></button>
+</div>
+
+<div class="foot">Vicente López · Buenos Aires</div>
+
+<script>
+const I={
+  arrowR:'<path d="M5 12h14M12 5l7 7-7 7"/>',
+  ext:'<path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><path d="M15 3h6v6M10 14L21 3"/>'
+};
+const svg=(k,c='')=>`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="${c}">${I[k]}</svg>`;
+
+const SLIDES=[
+
+{id:'hero',label:'Cover',html:`
+<div class="inner" style="position:relative">
+  <div class="cover-eyebrow fadein">
+    <span class="chip terra">✦ Propuesta personalizada</span>
+    <span class="chip">Vicente López · BA</span>
+    <span class="chip gold">Spa · Belleza · Holístico</span>
+  </div>
+  <h1 class="fadein d1" style="color:var(--ink)">Para Adara</h1>
+  <h1 class="fadein d2" style="color:var(--terra);margin-top:6px">Bienestar Integral.</h1>
+  <div class="fadein d3" style="margin-top:36px;display:flex;align-items:center;gap:18px"><span class="hairline" style="background:var(--terra)"></span><span class="label" style="color:var(--terra)">6 ideas para profundizar la experiencia</span></div>
+  <p class="fadein d4 lead" style="margin-top:28px;font-size:18px;max-width:580px">Una lectura desde afuera de Adara — y un mapa con seis ideas concretas para ordenar el pedido de turnos sin perder tu marca.</p>
+  <div class="cover-meta fadein d6">Por Valen<br/>Cofundador · Alvra.IA<br/>— Abril 2026</div>
+</div>`},
+
+{id:'why',label:'Por qué te escribo',html:`
+<div class="inner">
+  <div class="fadein section-label" style="margin-bottom:28px"><span class="num">02 / 10</span><span class="hairline"></span><span>Por qué te escribo</span></div>
+  <div class="two">
+    <div>
+      <h2 class="fadein d1">Hola,<br/><span class="terra">soy Valen.</span></h2>
+      <span class="growline terra fadein d2" style="margin-top:24px;width:80px;display:block"></span>
+      <p class="fadein d3 lead" style="margin-top:24px">Cofundador de <span class="italic">Alvra.IA</span> — una agencia chica de automatización y marketing digital, enfocada en emprendimientos reales de Buenos Aires.</p>
+    </div>
+    <div class="card strong fadein d3" style="padding:32px">
+      <p style="font-size:17px;line-height:1.65">Antes de escribirte me tomé un rato para mirar Adara desde afuera. Lo que vi me hizo pensar en <span class="italic">ideas concretas para tu spa</span> — no son soluciones genéricas, salen de lo que observé del perfil.</p>
+      <div style="margin:24px 0;height:1px;background:var(--ink20)"></div>
+      <ul class="list">
+        <li><span class="dash"></span><span>Base en Buenos Aires</span></li>
+        <li><span class="dash gold"></span><span>Enfoque en micro y pequeños emprendimientos</span></li>
+        <li><span class="dash brown"></span><span>Propuestas basadas en lo que ya existe</span></li>
+      </ul>
+      <p class="italic" style="margin-top:22px;font-size:15px;color:var(--terra)">"Esta presentación es eso. Ideas. Si alguna te cierra, la charlamos."</p>
+    </div>
+  </div>
+</div>`},
+
+{id:'observed',label:'Lo que observé',html:`
+<div class="inner">
+  <div class="cap-flex fadein">
+    <div>
+      <div class="section-label"><span class="num">03 / 10</span><span class="hairline"></span><span>Lo que observé</span></div>
+      <h2 class="fadein d1" style="margin-top:18px">Hechos verificables<br/><span class="muted serif">del perfil.</span></h2>
+    </div>
+    <div class="label muted" style="text-align:right;line-height:1.8;max-width:240px">Observación desde afuera<br/>Instagram · Linktr.ee · G. Maps</div>
+  </div>
+  <div class="six" style="margin-top:42px">
+    ${[
+      ['Perfil · IG','@adarabienestarintegral','Comunidad propia en Vicente López','terra'],
+      ['Especialización','Faciales · Corporales · Holístico','Oferta amplia de belleza y bienestar','gold'],
+      ['Canal de turnos','WhatsApp +54 11 4974-5102','DM de IG y WhatsApp directo','brown'],
+      ['Diferenciales','Tarot · Spa de niñas · Glitter','Propuestas únicas para eventos','terra'],
+      ['Ubicación','Vicente López, Buenos Aires','Local físico con reseñas en Maps','gold'],
+      ['Presencia digital','Linktr.ee, sin sitio propio','Sin catálogo ni reserva online','brown']
+    ].map((c,i)=>`
+      <div class="card acc ${c[3]==='gold'?'gold':c[3]==='brown'?'brown':''} fadein d${Math.min(i+1,6)}" style="padding:18px 18px 18px 24px">
+        <div class="label" style="color:var(--ink40);font-size:9.5px">${c[0]} · 0${i+1}</div>
+        <div class="serif" style="margin-top:10px;font-size:18px;line-height:1.2">${c[1]}</div>
+        <div class="muted" style="margin-top:8px;font-size:12.5px;line-height:1.45">${c[2]}</div>
+      </div>`).join('')}
+  </div>
+  <div class="card fadein d7" style="margin-top:24px;padding:18px 22px;display:flex;gap:18px;align-items:flex-start">
+    <span class="diamond" style="margin-top:9px"></span>
+    <div>
+      <div class="label terra" style="font-size:10px;margin-bottom:6px">Qué implica en el día a día</div>
+      <div style="font-size:14px;line-height:1.6">Cada turno arranca como una conversación nueva. Funciona al volumen actual, pero <span class="italic">es difícil de escalar sin sumar tiempo tuyo</span>.</div>
+    </div>
+  </div>
+</div>`},
+
+{id:'layers',label:'La propuesta',html:`
+<div class="inner">
+  <div class="fadein section-label" style="margin-bottom:18px"><span class="num">04 / 10</span><span class="hairline"></span><span>La propuesta</span></div>
+  <h2 class="fadein d1">6 ideas, secuencia<br/><span class="terra">lógica.</span></h2>
+  <p class="fadein d2 lead" style="margin-top:22px;font-size:17px">Tres capas que se construyen una sobre la otra. Podés arrancar por la base y sumar después.</p>
+  <div class="three" style="margin-top:44px">
+    ${[
+      ['01','Capa 1','Base digital','Sitio web propio con catálogo de tratamientos y reserva online.','Idea 1','terra'],
+      ['02','Capa 2','Operación','Reserva online de turnos · WhatsApp Business configurado.','Ideas 2 · 3','gold'],
+      ['03','Capa 3','Crecimiento','Plan de contenido · Link en bio · Fidelización.','Ideas 4 · 5 · 6','brown']
+    ].map((l,i)=>`
+      <div class="card acc ${l[5]==='gold'?'gold':l[5]==='brown'?'brown':''} strong fadein d${(i+1)*2}" style="padding:30px 28px;display:flex;flex-direction:column;min-height:280px;position:relative">
+        <div class="watermark">${l[0]}</div>
+        <div class="label" style="color:var(--${l[5]==='gold'?'gold':l[5]==='brown'?'ink':'terra'});position:relative;z-index:1">${l[1]}</div>
+        <h3 class="serif" style="margin-top:18px;color:var(--ink);font-size:30px;position:relative;z-index:1">${l[2]}</h3>
+        <p class="muted" style="margin-top:14px;font-size:14px;line-height:1.6;position:relative;z-index:1">${l[3]}</p>
+        <div style="flex:1"></div>
+        <div style="margin-top:20px;padding-top:14px;border-top:1px solid var(--ink10);display:flex;justify-content:space-between;align-items:center;position:relative;z-index:1">
+          <span class="label" style="color:var(--ink60)">${l[4]}</span>
+          <span class="diamond ${l[5]==='gold'?'gold':l[5]==='brown'?'brown':''}" style="margin:0"></span>
+        </div>
+      </div>`).join('')}
+  </div>
+</div>`},
+
+{id:'web',label:'Sitio web',html:`
+<div class="inner">
+  <div class="two">
+    <div>
+      <div class="fadein section-label"><span class="num">05 / 10</span><span class="hairline"></span><span>Idea 1 · Capa 1</span></div>
+      <h2 class="fadein d1" style="margin-top:20px">Sitio web<br/><span class="terra">propio.</span></h2>
+      <span class="growline terra fadein d2" style="margin-top:22px;width:80px;display:block"></span>
+      <p class="fadein d3 lead" style="margin-top:22px;font-size:16px">Hoy la única vidriera es Instagram y un linktr.ee. Una clienta que descubre Adara necesita DM o WhatsApp para ver opciones, precios y disponibilidad.</p>
+      <div class="card fadein d4" style="margin-top:24px;padding:18px 22px">
+        <p style="font-size:14px;line-height:1.6"><span class="italic">La web</span> se vuelve el punto central al que llega cualquier persona que descubre la marca — desde IG, Google Maps o una recomendación.</p>
+      </div>
+    </div>
+    <div>
+      <div class="fadein label muted" style="margin-bottom:14px">Qué incluye la propuesta</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+        ${[
+          ['01','Diseño propio con la identidad de Adara','terra'],
+          ['02','Catálogo de tratamientos con fotos, duración y precio','gold'],
+          ['03','Reserva online con calendario y seña (Mercado Pago)','brown'],
+          ['04','Secciones para eventos, tarot y spa de niñas','terra'],
+          ['05','Mobile-first — pensada para celular','gold'],
+          ['06','URL propia (ej. adarabienestar.com.ar)','brown']
+        ].map((it,i)=>`
+          <div class="card acc ${it[2]==='gold'?'gold':it[2]==='brown'?'brown':''} fadein d${i+1}" style="padding:14px 14px 14px 20px">
+            <div class="label" style="color:var(--ink40);font-size:9.5px">${it[0]}</div>
+            <div style="margin-top:6px;font-size:13px;line-height:1.45">${it[1]}</div>
+          </div>`).join('')}
+      </div>
+    </div>
+  </div>
+</div>`},
+
+{id:'ops',label:'Reserva + WhatsApp',html:`
+<div class="inner">
+  <div class="fadein section-label" style="margin-bottom:18px"><span class="num">06 / 10</span><span class="hairline"></span><span>Capa 2 · Operación</span></div>
+  <h2 class="fadein d1">Reserva online +<br/><span class="terra">WhatsApp profesional.</span></h2>
+  <div style="display:grid;grid-template-columns:1.05fr 1fr;gap:24px;margin-top:38px">
+    <div class="card acc strong fadein d3" style="padding:28px">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start">
+        <span class="label terra">Idea 2</span>
+        <span class="serif terra" style="font-size:32px;line-height:1">02</span>
+      </div>
+      <h3 class="serif" style="margin-top:16px;font-size:26px">Formulario de reserva online</h3>
+      <p class="muted" style="margin-top:10px;font-size:14px;line-height:1.6">Integrado a la web o como link independiente. En una sola pantalla la clienta elige:</p>
+      <ul class="list" style="margin-top:14px">
+        <li><span class="dash"></span><span>Tratamiento y profesional</span></li>
+        <li><span class="dash"></span><span>Fecha y horario disponible</span></li>
+        <li><span class="dash"></span><span>Datos de contacto</span></li>
+        <li><span class="dash"></span><span>Seña opcional por Mercado Pago</span></li>
+      </ul>
+      <div style="margin-top:20px;padding-top:14px;border-top:1px solid var(--ink10);font-size:13.5px" class="italic terra">El turno llega agendado. Sin idas y vueltas.</div>
+    </div>
+    <div class="card acc gold strong fadein d5" style="padding:28px">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start">
+        <span class="label gold-c">Idea 3</span>
+        <span class="serif gold-c" style="font-size:32px;line-height:1">03</span>
+      </div>
+      <h3 class="serif" style="margin-top:16px;font-size:26px">WhatsApp Business configurado</h3>
+      <p class="muted" style="margin-top:10px;font-size:14px;line-height:1.6">Hoy WhatsApp es el canal principal. Una configuración más profesional suma sin cambiar la herramienta:</p>
+      <ul class="list" style="margin-top:14px">
+        <li><span class="dash gold"></span><span>Catálogo de tratamientos visible en el chat</span></li>
+        <li><span class="dash gold"></span><span>Mensaje de bienvenida con preguntas frecuentes</span></li>
+        <li><span class="dash gold"></span><span>Respuestas rápidas guardadas</span></li>
+        <li><span class="dash gold"></span><span>Etiquetas: «Reservado», «Confirmado», «Atendido»</span></li>
+      </ul>
+      <div style="margin-top:20px;padding-top:14px;border-top:1px solid var(--ink10);font-size:13.5px" class="italic gold-c">Menos tiempo respondiendo lo mismo.</div>
+    </div>
+  </div>
+</div>`},
+
+{id:'content',label:'Plan de contenido',html:`
+<div class="inner">
+  <div class="two rev">
+    <div>
+      <div class="fadein label muted" style="margin-bottom:14px">Qué incluye la propuesta</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+        ${[
+          ['01','Calendario editorial mensual — 12-16 piezas','terra'],
+          ['02','Reels de tratamientos y detrás de escena','gold'],
+          ['03','Carruseles educativos sobre skincare','brown'],
+          ['04','Plantillas reutilizables con la identidad','terra'],
+          ['05','Horarios optimizados público AR','gold'],
+          ['06','Revisión mensual de alcance','brown']
+        ].map((it,i)=>`
+          <div class="card acc ${it[2]==='gold'?'gold':it[2]==='brown'?'brown':''} fadein d${i+1}" style="padding:14px 14px 14px 20px">
+            <div class="label" style="color:var(--ink40);font-size:9.5px">${it[0]}</div>
+            <div style="margin-top:6px;font-size:13px;line-height:1.45">${it[1]}</div>
+          </div>`).join('')}
+      </div>
+      <div class="card fadein d7" style="margin-top:18px;padding:16px 20px">
+        <div class="label muted" style="font-size:9.5px;margin-bottom:10px">Cadencia · ejemplo</div>
+        <div class="cal">
+          ${['L','M','M','J','V','S','D'].map((d,i)=>`<div><div class="d">${d}</div><div class="b ${[1,3,5].includes(i)?'on':''}"></div></div>`).join('')}
+        </div>
+      </div>
+    </div>
+    <div>
+      <div class="fadein section-label"><span class="num">07 / 10</span><span class="hairline"></span><span>Idea 4 · Capa 3</span></div>
+      <h2 class="fadein d1" style="margin-top:20px">Plan de contenido<br/><span class="terra">sistemático.</span></h2>
+      <span class="growline terra fadein d2" style="margin-top:22px;width:80px;display:block"></span>
+      <p class="fadein d3 lead" style="margin-top:22px;font-size:16px">El perfil muestra constancia y sensibilidad estética. Lo que falta es <span class="italic">un sistema</span> que haga más fácil saber qué publicar cada semana — sin que absorba tiempo de atención a clientas.</p>
+    </div>
+  </div>
+</div>`},
+
+{id:'retention',label:'Link + fidelización',html:`
+<div class="inner">
+  <div class="fadein section-label" style="margin-bottom:18px"><span class="num">08 / 10</span><span class="hairline"></span><span>Capa 3 · Crecimiento</span></div>
+  <h2 class="fadein d1">Link en bio +<br/><span class="terra">fidelización.</span></h2>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-top:36px">
+    <div class="card acc strong fadein d3" style="padding:28px;display:flex;flex-direction:column">
+      <div style="display:flex;justify-content:space-between"><span class="label terra">Idea 5</span><span class="serif terra" style="font-size:32px;line-height:1">05</span></div>
+      <h3 class="serif" style="margin-top:14px;font-size:24px">Link en bio que lleva a la web</h3>
+      <p class="muted" style="margin-top:10px;font-size:13.5px;line-height:1.6">Con la web lista, el linktr.ee se vuelve la puerta de entrada real: catálogo completo, reserva online y contacto en un solo lugar.</p>
+      <div class="phone">
+        <div class="head">@adarabienestarintegral</div>
+        ${['Reservar turno','Catálogo de tratamientos','Eventos y spa de niñas','WhatsApp directo'].map(l=>`<div class="lk"><span>${l}</span>${svg('ext')}</div>`).join('')}
+      </div>
+      <div class="italic terra" style="text-align:center;margin-top:14px;font-size:13.5px">Convierte seguidoras en clientas reales.</div>
+    </div>
+    <div class="card acc gold strong fadein d5" style="padding:28px;display:flex;flex-direction:column">
+      <div style="display:flex;justify-content:space-between"><span class="label gold-c">Idea 6</span><span class="serif gold-c" style="font-size:32px;line-height:1">06</span></div>
+      <h3 class="serif" style="margin-top:14px;font-size:24px">Sistema simple de fidelización</h3>
+      <p class="muted" style="margin-top:10px;font-size:13.5px;line-height:1.6">Las clientas que ya pasaron por Adara son las más fáciles de volver a atender:</p>
+      <div style="margin-top:18px;display:flex;flex-direction:column;gap:10px">
+        ${[
+          'Lista voluntaria de WhatsApp para promos de temporada',
+          'Mensaje post-tratamiento con cuidados y próximo turno',
+          'Cumpleaños registrados — regalo o descuento'
+        ].map(t=>`<div class="card" style="padding:13px 16px;display:flex;gap:12px;align-items:flex-start;background:rgba(255,247,236,.45)">
+          <span class="diamond gold" style="margin-top:7px"></span><span style="font-size:13.5px;line-height:1.5">${t}</span>
+        </div>`).join('')}
+      </div>
+      <div style="flex:1"></div>
+      <div style="margin-top:20px;padding-top:14px;border-top:1px solid var(--ink10);font-size:13px" class="italic gold-c">No es captación nueva. Es cuidar la que ya tenés.</div>
+    </div>
+  </div>
+</div>`},
+
+{id:'roadmap',label:'Roadmap',html:`
+<div class="inner">
+  <div class="fadein section-label" style="margin-bottom:18px"><span class="num">09 / 10</span><span class="hairline"></span><span>Roadmap</span></div>
+  <h2 class="fadein d1">Por dónde<br/><span class="terra">empezaría.</span></h2>
+  <p class="fadein d2 lead" style="margin-top:22px;font-size:17px">Si tuviera que elegir un orden, sería éste. Pero es una lectura desde afuera — vos conocés mejor qué urge ahora en Adara.</p>
+  <div style="margin-top:48px;position:relative">
+    <span class="growline terra fadein d2" style="position:absolute;top:5px;left:0;right:0;height:1px"></span>
+    <div class="three">
+      ${[
+        ['Capa 1 · Base','Web','Sitio propio, catálogo de tratamientos y reserva online.','La web es la estructura sobre la que se apoyan casi todas las otras ideas.','terra'],
+        ['Capa 2 · Operativo','Reserva + WhatsApp','Formulario de turnos y WhatsApp Business profesionalizado.','Profesionalizan el día a día sin cambiar las herramientas.','gold'],
+        ['Capa 3 · Crecimiento','Contenido + fidelización','Plan editorial, link en bio activo y cuidado de clientas.','Hace crecer lo que ya funciona.','brown']
+      ].map((s,i)=>`
+        <div class="fadein d${(i+1)*2}">
+          <div class="tdot ${s[4]==='gold'?'gold':s[4]==='brown'?'brown':''}"></div>
+          <div class="card acc ${s[4]==='gold'?'gold':s[4]==='brown'?'brown':''}" style="padding:22px 24px">
+            <div class="label" style="color:var(--${s[4]==='gold'?'gold':s[4]==='brown'?'ink':'terra'})">${s[0]}</div>
+            <h3 class="serif" style="margin-top:12px;font-size:24px">${s[1]}</h3>
+            <p class="muted" style="margin-top:10px;font-size:13.5px;line-height:1.55">${s[2]}</p>
+            <div style="margin-top:16px;padding-top:12px;border-top:1px solid var(--ink10)">
+              <div class="label" style="color:var(--ink40);margin-bottom:6px">↳ Por qué</div>
+              <div class="muted" style="font-size:13px;line-height:1.55">${s[3]}</div>
+            </div>
+          </div>
+        </div>`).join('')}
+    </div>
+  </div>
+</div>`},
+
+{id:'next',label:'Próximo paso',html:`
+<div class="inner" style="text-align:center">
+  <div class="fadein" style="display:inline-flex;align-items:center;gap:14px"><span class="hairline" style="background:var(--terra)"></span><span class="label terra">10 / 10 · Próximo paso</span><span class="hairline" style="background:var(--terra)"></span></div>
+  <h1 class="fadein d1" style="margin-top:32px;font-size:clamp(48px,7vw,104px)">Esta presentación<br/><span class="terra">es un mapa.</span></h1>
+  <p class="fadein d2 lead" style="margin:32px auto 0;font-size:18px;max-width:620px">No hay presupuesto ni compromiso atado. Si alguna idea te hace sentido, te propongo un audio o llamada de <span class="italic">20 minutos</span> para profundizar la que más te interese.</p>
+  <div class="contact">
+    ${[
+      ['Instagram','@alvra.ia','https://instagram.com/alvra.ia'],
+      ['Email','alvra.ia@gmail.com','mailto:alvra.ia@gmail.com'],
+      ['Web','alvra-ia.com','https://alvra-ia.com'],
+      ['Firma','Valen · Cofundador','']
+    ].map((c,i)=>`
+      <a class="fadein d${i+3}" href="${c[2]||'#'}" ${c[2]?'target="_blank" rel="noreferrer"':''}>
+        ${c[2]?`<span class="ic">${svg('ext')}</span>`:''}
+        <div class="lab">${c[0]}</div>
+        <div class="val">${c[1]}</div>
+      </a>`).join('')}
+  </div>
+  <div class="fadein d8 label muted" style="margin-top:48px;font-size:10px">Adara × Alvra.IA — Abril 2026</div>
+</div>`}
+];
+
+const stage=document.getElementById('stage');
+const dots=document.getElementById('dots');
+
+SLIDES.forEach((s,i)=>{
+  const sec=document.createElement('section');
+  sec.className='slide';sec.id='s'+i;sec.innerHTML=s.html;
+  stage.appendChild(sec);
+  const b=document.createElement('button');
+  b.innerHTML=`<span class="tag">${String(i+1).padStart(2,'0')} · ${s.label}</span>`;
+  b.onclick=()=>goTo(i);
+  dots.appendChild(b);
+});
+document.getElementById('ftot').textContent=String(SLIDES.length).padStart(2,'0');
+
+let cur=0,scrollLock=false;
+const slides=document.querySelectorAll('.slide');
+
+function setActive(n){
+  if(n===cur)return;
+  cur=n;
+  slides.forEach((el,i)=>el.classList.toggle('in',i===n));
+  [...dots.children].forEach((b,i)=>b.classList.toggle('on',i===n));
+  document.getElementById('prog').style.width=((n+1)/SLIDES.length*100)+'%';
+  document.getElementById('fnum').textContent=String(n+1).padStart(2,'0');
+  document.getElementById('prev').disabled=n===0;
+  document.getElementById('next').disabled=n===SLIDES.length-1;
+}
+
+function goTo(i){
+  i=Math.max(0,Math.min(SLIDES.length-1,i));
+  scrollLock=true;
+  slides[i].scrollIntoView({behavior:'smooth',block:'start'});
+  setActive(i);
+  setTimeout(()=>scrollLock=false,800);
+}
+
+function go(d){goTo(cur+d)}
+window.go=go;
+
+document.getElementById('prev').onclick=()=>go(-1);
+document.getElementById('next').onclick=()=>go(1);
+
+// Detect active slide on scroll
+const io=new IntersectionObserver((entries)=>{
+  if(scrollLock)return;
+  entries.forEach(en=>{
+    if(en.isIntersecting&&en.intersectionRatio>0.6){
+      const idx=parseInt(en.target.id.slice(1));
+      setActive(idx);
+    }
+  });
+},{threshold:[0.6]});
+slides.forEach(s=>io.observe(s));
+
+addEventListener('keydown',e=>{
+  if(['ArrowDown','ArrowRight','PageDown',' '].includes(e.key)){e.preventDefault();go(1)}
+  else if(['ArrowUp','ArrowLeft','PageUp'].includes(e.key)){e.preventDefault();go(-1)}
+  else if(e.key==='Home')goTo(0);
+  else if(e.key==='End')goTo(SLIDES.length-1);
+});
+
+// Init first
+slides[0].classList.add('in');
+[...dots.children][0].classList.add('on');
+document.getElementById('prev').disabled=true;
+</script>
+</body></html>
