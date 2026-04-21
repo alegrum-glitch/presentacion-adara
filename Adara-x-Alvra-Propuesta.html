@@ -17,6 +17,7 @@ html,body{height:100%;width:100%;overflow:hidden}
 body{
   font-family:'Inter',system-ui,sans-serif;color:var(--ink);
   background:linear-gradient(160deg,var(--bg1) 0%,var(--bg2) 100%);
+  background-attachment:fixed;
   -webkit-font-smoothing:antialiased;
 }
 body::before{
@@ -174,6 +175,65 @@ a{color:inherit;text-decoration:none}
 .cal .b.on{background:rgba(184,91,66,.18);border-color:rgba(184,91,66,.4)}
 
 .cap-flex{display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:24px}
+
+/* Pair grid (large two-card layouts) */
+.pair{display:grid;grid-template-columns:1fr 1fr;gap:24px}
+.pair.lean{grid-template-columns:1.05fr 1fr}
+@media(max-width:900px){.pair,.pair.lean{grid-template-columns:1fr}}
+
+/* Tablet */
+@media(max-width:900px){
+  .slide{padding:84px 32px 80px}
+  .foot{display:none}
+  .watermark{font-size:96px}
+}
+
+/* Mobile */
+@media(max-width:720px){
+  html,body{overflow-x:hidden;overflow-y:auto;height:auto}
+  .stage{height:auto;width:100%;overflow:visible;scroll-snap-type:none}
+  .slide{height:auto;min-height:100vh;min-height:100dvh;width:100%;scroll-snap-align:none;scroll-snap-stop:normal;padding:82px 20px 90px}
+
+  h1{font-size:clamp(40px,11vw,72px)}
+  h2{font-size:clamp(30px,7.8vw,48px)}
+  h3{font-size:clamp(20px,5vw,26px)}
+
+  .brand{top:14px;left:16px;gap:9px}
+  .brand .lg{width:26px;height:26px}
+  .brand .lg div{width:7px;height:7px}
+  .brand .nm{font-size:9.5px;letter-spacing:.16em}
+  .brand .sub{font-size:8.5px;letter-spacing:.16em;margin-top:1px}
+
+  .frame{top:18px;right:16px;font-size:9.5px;letter-spacing:.16em}
+
+  .dots{display:none}
+
+  .nav{bottom:16px;left:16px;flex-direction:row;gap:8px}
+  .nav button{width:42px;height:42px}
+
+  .card{padding:18px;border-radius:12px}
+  .card.acc{padding-left:22px}
+  .card.acc::before{top:14px;bottom:14px}
+
+  .lead{font-size:15px}
+
+  .cover-eyebrow{margin-bottom:24px;gap:7px}
+  .chip{padding:5px 10px;font-size:9.5px;letter-spacing:.15em}
+  .cover-meta{position:static;text-align:left;margin-top:28px}
+
+  .watermark{font-size:72px;right:10px;top:8px}
+
+  .contact{grid-template-columns:1fr 1fr;gap:10px;margin-top:32px}
+  .contact a{padding:14px}
+  .contact .val{font-size:15px}
+
+  .section-label{gap:10px;font-size:10px;letter-spacing:.16em;flex-wrap:wrap}
+  .cap-flex>div:last-child{text-align:left}
+  .phone{max-width:100%}
+  .six{grid-template-columns:1fr 1fr}
+  .two{gap:24px}
+  .growline{max-width:100%}
+}
 </style></head>
 <body>
 
@@ -344,7 +404,7 @@ const SLIDES=[
 <div class="inner">
   <div class="fadein section-label" style="margin-bottom:18px"><span class="num">06 / 10</span><span class="hairline"></span><span>Capa 2 · Operación</span></div>
   <h2 class="fadein d1">Reserva online +<br/><span class="terra">WhatsApp profesional.</span></h2>
-  <div style="display:grid;grid-template-columns:1.05fr 1fr;gap:24px;margin-top:38px">
+  <div class="pair lean" style="margin-top:38px">
     <div class="card acc strong fadein d3" style="padding:28px">
       <div style="display:flex;justify-content:space-between;align-items:flex-start">
         <span class="label terra">Idea 2</span>
@@ -417,7 +477,7 @@ const SLIDES=[
 <div class="inner">
   <div class="fadein section-label" style="margin-bottom:18px"><span class="num">08 / 10</span><span class="hairline"></span><span>Capa 3 · Crecimiento</span></div>
   <h2 class="fadein d1">Link en bio +<br/><span class="terra">fidelización.</span></h2>
-  <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-top:36px">
+  <div class="pair" style="margin-top:36px">
     <div class="card acc strong fadein d3" style="padding:28px;display:flex;flex-direction:column">
       <div style="display:flex;justify-content:space-between"><span class="label terra">Idea 5</span><span class="serif terra" style="font-size:32px;line-height:1">05</span></div>
       <h3 class="serif" style="margin-top:14px;font-size:24px">Link en bio que lleva a la web</h3>
@@ -544,12 +604,12 @@ document.getElementById('next').onclick=()=>go(1);
 const io=new IntersectionObserver((entries)=>{
   if(scrollLock)return;
   entries.forEach(en=>{
-    if(en.isIntersecting&&en.intersectionRatio>0.6){
+    if(en.isIntersecting&&en.intersectionRatio>0.4){
       const idx=parseInt(en.target.id.slice(1));
       setActive(idx);
     }
   });
-},{threshold:[0.6]});
+},{threshold:[0.4,0.7]});
 slides.forEach(s=>io.observe(s));
 
 addEventListener('keydown',e=>{
